@@ -4,8 +4,11 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import PincodeData
 from .serializers import PincodeDataSerializer
+from django.http import Http404
 
-from rest_framework import viewsets
+
+from rest_framework import viewsets, status
+
 
 from rest_framework import filters
 from django_filters.rest_framework import DjangoFilterBackend
@@ -36,14 +39,15 @@ class PincodeDataView(APIView):
 class PincodeDataDetail(APIView):
     
 
-    def get_object(self, pk):
+    def get_object(self, pincode):
         try:
-            return PincodeData.objects.get(pk=pk)
+            return PincodeData.objects.get(pincode=pincode)
         except PincodeData.DoesNotExist:
             raise Http404
+        
 
-    def get(self, request, pk, format=None):
-        pincode = self.get_object(pk)
+    def get(self, request, pincode, format=None):
+        pincode = self.get_object(pincode)
         serializer = PincodeDataSerializer(pincode)
         return Response(serializer.data)
 
